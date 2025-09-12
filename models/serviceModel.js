@@ -5,8 +5,9 @@ const ServiceSchema =  mongoose.Schema({
   phone: { type: Number, required: true },
   Email: { type: String, required: true },
   description: { type: String, required: true },
-  budget: { type: Number, required: true },
+  budget: { type: Number, required: false, default: 'Price range' },
   serviceName: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now },
 })
 
 module.exports = mongoose.model('Service', ServiceSchema);

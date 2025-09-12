@@ -1,8 +1,10 @@
 const express = require('express');
-const Users = require('../models/usersModel');
+const authController = require('../controllers/authController');
 
 const router = express.Router();
 
-router.post('/', async(req, res) => {});
+// On authenticating signIn & signIn routes
+router.post('/signup', authController.signup);
+router.post('/login', authController.login);
 
 module.exports = router;

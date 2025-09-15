@@ -2,6 +2,7 @@ const User = require('../models/usersModel');
 const createError = require('../utils/appError');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 
 // On creating jwt token 
 const signToken = (id) => {
@@ -13,8 +14,9 @@ const signToken = (id) => {
 // On creating helper function to send token in cookie
 const creatSendToken = (user, statuCode, res) => {
   const token = signToken(user._id);
+  const csrfToken = crypto.randomBytes(32).toString('hex');
 
-  //On setting cokkie options
+  //On setting cookie options
   const cookieOptions = {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
@@ -23,6 +25,12 @@ const creatSendToken = (user, statuCode, res) => {
   };
 
   res.cookie('jwt', token, cookieOptions);
+
+  // CSRF cookie
+  res.cookie('csrfToken', csrfToken, {
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'none',
+  });
 
   res.status(statuCode).json({
     status: 'success',
@@ -33,6 +41,7 @@ const creatSendToken = (user, statuCode, res) => {
       email: user.email,
       role: user.role,
     },
+    csrfToken,
   });
 };
 
@@ -76,6 +85,37 @@ exports.login = async (req, res, next) => {
 
     creatSendToken(user, 200, res);
   } catch (error) {
+    next(error);
+  }
+};
+
+// On logging out (clear cookies info)
+exports.logout = (req, res) => {
+  res.clearCookie('jwt', {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'none',
+});
+
+  res.status(200).json({
+    status: 'success',
+    message: 'logged out successfully',
+  });
+};
+
+// On creating sessions
+exports.getProfile = async (req, res, next) => {
+  try {
+    const user  = await User.findOne(req.user.id).select('-password');
+    if (!user) {
+      return next(new createError('User not found', 404));
+    }
+
+    res.status(200).json({
+      status: 'Success',
+      user,
+    });
+  } catch (error) { 
     next(error);
   }
 };

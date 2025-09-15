@@ -9,9 +9,13 @@ const SeriviceRouter = require('./routes/service.js');
 const UserRoutes = require('./routes/users.js');
 
 const app = express();
-app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
+app.use(cors({
+  origin:['http://localhost:5173'],
+  credentials: true,
+}));
+
 
 const PORT = 5000;
 

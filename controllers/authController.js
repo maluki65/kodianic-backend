@@ -106,7 +106,7 @@ exports.logout = (req, res) => {
 // On creating sessions
 exports.getProfile = async (req, res, next) => {
   try {
-    const user  = await User.findOne(req.user.id).select('-password');
+    const user  = await User.findById(req.user.id).select('-password');
     if (!user) {
       return next(new createError('User not found', 404));
     }

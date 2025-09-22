@@ -13,12 +13,17 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-  origin:['http://localhost:5173', 'https://kodianic.vercel.app/'],
+  origin:['http://localhost:5173', 'https://kodianic.vercel.app'],
   credentials: true,
 }));
 
 
 const PORT = 5000;
+
+app.options('*', cors({
+  origin: ['http://localhost:5173', 'https://kodianic.vercel.app'],
+  credentials: true,
+}));
 
 app.use('/v1/api/users', UserRoutes);
 app.use('/v1/api/contactUs', ContactRouter);

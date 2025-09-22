@@ -20,10 +20,12 @@ app.use(cors({
 
 const PORT = 5000;
 
-app.options('*', cors({
+const corsOptions = {
   origin: ['http://localhost:5173', 'https://kodianic.vercel.app'],
   credentials: true,
-}));
+};
+
+app.use(cors(corsOptions));
 
 app.use('/v1/api/users', UserRoutes);
 app.use('/v1/api/contactUs', ContactRouter);
